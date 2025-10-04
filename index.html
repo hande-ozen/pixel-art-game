@@ -13,13 +13,13 @@
 </head>
 
 <body>
-    <div class="page gizle" id="page-home">
+    <div class="page" id="page-home">
         <img class="logo" src="./assets/images/pixel-art-logo.png" alt="logo">
 
-        <button class="btn">Start</button>
+        <button class="btn" id="startBtn">Start</button>
     </div>
 
-    <div class="page gizle" id="page-templates">
+    <div class="page hidden" id="page-templates">
         <div class="container">
             <img class="thumbnail finish" src="./assets/images/14x14 _ minecraft creeper.jpg" alt="thumbnail">
             <img class="thumbnail" src="./assets/images/13x13 _ unicorn.jpg" alt="thumbnail">
@@ -33,12 +33,12 @@
         </div>
     </div>
 
-    <div class="page page-artboard" id="page-artboard">
+    <div class="page hidden" id="page-artboard">
         <div class="header">
-            <button class="btn btn-artboard">
+            <button class="btn btn-artboard" id="backBtn">
                 <i class="fa-solid fa-arrow-left icon"></i>
             </button>
-            <button class="btn btn-artboard">
+            <button class="btn btn-artboard" id="replayBtn">
                 <i class="fa-solid fa-rotate-right btn-replay icon"></i>
             </button>
         </div>
@@ -74,7 +74,7 @@
         </div>
 
         <div class="palette">
-            <div class="btn-palette btn-palette-left">
+            <div class="btn-palette btn-palette-left" id="btnPaletteLeft">
                 <i class="fa-solid fa-arrow-left icon"></i>
             </div>
 
@@ -122,15 +122,17 @@
                 </div>
             </div>
 
-            <div class="btn-palette btn-palette-right">
+            <div class="btn-palette btn-palette-right" id="btnPaletteRight">
                 <i class="fa-solid fa-arrow-right icon"></i>
             </div>
         </div>
 
-        <div id="pop-up" class="gizle">
+        <div id="pop-up" class="hidden">
             <img src="./assets/images/pop-up-background.png" alt="pop up">
         </div>
     </div>
+
+    <script src="./assets/js/main.js"></script>
 </body>
 
 </html>

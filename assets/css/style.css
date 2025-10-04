@@ -39,7 +39,7 @@ button {
 
 /******************************************************/
 
-.gizle {
+.hidden {
     display: none !important;
 }
 
@@ -159,13 +159,6 @@ button {
     cursor: pointer;
 }
 
-.page-artboard>.header {
-    display: flex;
-    justify-content: space-between;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
 .btn-artboard {
     width: 80px;
 }
@@ -267,6 +260,13 @@ button {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#page-artboard>.header {
+    display: flex;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 #pop-up {
