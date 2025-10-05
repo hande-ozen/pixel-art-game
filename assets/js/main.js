@@ -22,9 +22,9 @@ let artboardWidth = 0; // Will be set when the artboard is opened
 // ======================================================================= //
 
 const creeperConfig = {
-    width:8,
-    height:8,
-    colors:["#70C47A", "#C6FFA8", "#000000",]
+    width: 8,
+    height: 8,
+    colors: ["#70C47A", "#C6FFA8", "#000000",]
 };
 
 const creeper = [
@@ -115,7 +115,7 @@ btnPaletteLeft.onclick = scrollPaletteLeft;
 btnPaletteRight.onclick = scrollPaletteRight;
 
 for (let i = 0; i < thumbnails.length; i++) {
-    thumbnails[i].onclick = openArtboard;    
+    thumbnails[i].onclick = openArtboard;
 }
 
 // ======================================================================= //
@@ -130,10 +130,9 @@ function startGame() {
 function openArtboard() {
     templates.classList.add("hidden");
     game.classList.remove("hidden");
-
     artboardWidth = pixelBox.offsetWidth;
+    console.log("Artboard Width: " + artboardWidth);
     renderPixels();
-    
 }
 
 function renderPixels() {
@@ -146,7 +145,7 @@ function renderPixels() {
         pixel.style.backgroundColor = creeper[i];
         pixelBox.appendChild(pixel);
     }
-}   
+}
 
 
 function goBack() {
@@ -154,10 +153,10 @@ function goBack() {
     templates.classList.remove("hidden");
 }
 
-function replayGame() {}
+function replayGame() { }
 
-function scrollPaletteLeft() {}
+function scrollPaletteLeft() { }
 
-function scrollPaletteRight() {}
+function scrollPaletteRight() { }
 
 //
