@@ -138,10 +138,6 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: auto;
-    width: 60px;
-    height: 60px;
-    background-color: #ccc;
 }
 .pixel-box>div:nth-child(odd) {
     background-color: #eee;
