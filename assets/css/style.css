@@ -170,6 +170,8 @@ button {
 .colors-box {
     display: flex;
     justify-content: flex-start;
+    max-width: 100%;
+    overflow-x: hidden;
     gap: 30px;
     padding: 20px 30px 12px;
     background: #ffffff;
@@ -239,7 +241,7 @@ button {
     border-radius: 30px;
 }
 
-.bar-fiil {
+.bar-fill {
     width: 100%;
     height: 100%;
     background-color: var(--background-color);
