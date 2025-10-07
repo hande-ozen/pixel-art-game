@@ -112,9 +112,12 @@ replayBtn.onclick = replayGame;
 btnPaletteLeft.onclick = scrollPaletteLeft;
 btnPaletteRight.onclick = scrollPaletteRight;
 
+
 for (let i = 0; i < thumbnails.length; i++) {
     thumbnails[i].onclick = openArtboard;
 }
+
+
 
 // ======================================================================= //
 
@@ -151,10 +154,11 @@ function renderPixels() {
     }
 }
 
-/* function renderPalette() { 
+ function renderPalette() { 
     // Paleti renklerini renderla
     palletteBox.innerHTML = ""; // Temizle
     for (let i = 0; i < creeperConfig.colors.length; i++) {
+        
         const colorBox = document.createElement("div");
         colorBox.classList.add("color-box");
 
@@ -162,12 +166,19 @@ function renderPixels() {
         colorNumberBox.classList.add("color-number-box");
         colorNumberBox.style.backgroundColor = creeperConfig.colors[i];
         colorNumberBox.textContent = i + 1;
-
+        let defaultColor = "#000000";  
+        if (tooDark(creeperConfig.colors[i])) {
+            colorNumberBox.style.color = "#ffffff";
+        }
+    
         const finishBar = document.createElement("div");
         finishBar.classList.add("finish-bar");
+        finishBar.classList.add("hidden");
 
         const barFill = document.createElement("div");
         barFill.classList.add("bar-fill");
+
+
 
         // ----
 
@@ -176,11 +187,17 @@ function renderPixels() {
         colorBox.appendChild(finishBar);
 
         palletteBox.appendChild(colorBox);
-    }
-} */
 
+        // Event listeners
+        colorNumberBox.addEventListener("click", () => {
+            console.log(i);
+            colorSelected(i);
+            finishBarShow(i);
+        });
+    }
+} 
 // Easier way
-function renderPalette() {
+/* function renderPalette() {
     palletteBox.innerHTML = ""; // Temizle
     for (let i = 0; i < creeperConfig.colors.length; i++) {
         let textColor = "#000000";
@@ -196,13 +213,36 @@ function renderPalette() {
         </div>
         `;
         palletteBox.innerHTML += htmlString;
+
+        // Event listeners
+        const colorNumberBox = document.getElementsByClassName("color-number-box")[i];
+        //colorNumberBox.onclick = colorSelected;
+        //colorNumberBox.onclick = function () { colorSelected(i) };
+        //colorNumberBox.addEventListener("click", function () { colorSelected(i) });
+        //colorNumberBox.addEventListener("click", () => colorSelected(i)); // Arrow function
+        colorNumberBox.addEventListener("click", (e) => {
+            console.log(i);
+            e.target.classList.add("selected");
+        });
+
+        // BOK OLDU (olmadi)
     }
-}
+} */
 
 
 function goBack() {
     game.classList.add("hidden");
     templates.classList.remove("hidden");
+}
+
+function colorSelected(i) {
+    const colorNumberBox = document.getElementsByClassName("color-number-box")[i];
+    colorNumberBox.classList.add("selected");
+}
+
+function finishBarShow(i) {
+    const finishBar = document.getElementsByClassName("finish-bar")[i];
+    finishBar.classList.remove("hidden");
 }
 
 function replayGame() { }
@@ -244,8 +284,8 @@ function convertToGray(hexColor) {
         return "#7D7D7D";
     }
 
-    else if ( luma >= 213) { 
+    else if (luma >= 213) {
         return "#D5D5D5";
     }
-    else { return "#A4A4A4"}
+    else { return "#A4A4A4" }
 }

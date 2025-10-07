@@ -101,7 +101,7 @@ button {
     cursor: pointer;
 }
 
-.container>img:hover{
+.container>img:hover {
     border: 4px solid var(--background-color);
 
 }
@@ -140,9 +140,11 @@ button {
     justify-content: center;
     align-items: center;
 }
+
 .pixel-box>div:nth-child(odd) {
     background-color: #eee;
 }
+
 .pixel-box>div:nth-child(2n+1) {
     background-color: #aaa;
 }
@@ -151,6 +153,7 @@ button {
     background-color: #555;
     color: #000
 }
+
 .pixel-box>div.enabled:hover {
     border: 2px solid var(--background-color);
     cursor: pointer;
@@ -184,8 +187,6 @@ button {
     width: 57px;
     height: 57px;
     font-size: 24px;
-    background-color: #FF957B;
-    /*Deneme rengi*/
     display: flex;
     justify-content: center;
     align-items: center;
@@ -239,6 +240,7 @@ button {
     margin-top: 8px;
     border: 2px solid var(--secondary-color);
     border-radius: 30px;
+    overflow-x: hidden;
 }
 
 .bar-fill {
