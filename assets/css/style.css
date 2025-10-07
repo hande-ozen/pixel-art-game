@@ -149,8 +149,12 @@ button {
     background-color: #aaa;
 }
 
+.pixel-box>div.disabled {
+    opacity: 0.5;
+}
+
 .pixel-box>div.enabled {
-    background-color: #555;
+    background-color: #555 !important;
     color: #000
 }
 
@@ -240,16 +244,20 @@ button {
     margin-top: 8px;
     border: 2px solid var(--secondary-color);
     border-radius: 30px;
-    overflow-x: hidden;
+    overflow : hidden;
 }
 
 .bar-fill {
-    width: 100%;
+    width: 0%;
     height: 100%;
+    transition: width .35s ease, background-color .15s;
     background-color: var(--background-color);
     border-radius: 30px;
 }
 
+.finish-bar:not(.hidden) .bar-fill {
+    width: 100%;
+}
 
 /******************************************************/
 

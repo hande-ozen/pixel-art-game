@@ -147,18 +147,20 @@ function renderPixels() {
         pixel.style.backgroundColor = convertToGray(creeper[i]);
         for (let x = 0; x < creeperConfig.colors.length; x++) { // Renklerden birine eşitse}
             if (creeper[i] == creeperConfig.colors[x]) {
+                pixel.dataset.colorIndex = x;
                 pixel.textContent = x + 1;
+                break;
             }
         }
         pixelBox.appendChild(pixel);
     }
 }
 
- function renderPalette() { 
+function renderPalette() {
     // Paleti renklerini renderla
     palletteBox.innerHTML = ""; // Temizle
     for (let i = 0; i < creeperConfig.colors.length; i++) {
-        
+
         const colorBox = document.createElement("div");
         colorBox.classList.add("color-box");
 
@@ -166,19 +168,17 @@ function renderPixels() {
         colorNumberBox.classList.add("color-number-box");
         colorNumberBox.style.backgroundColor = creeperConfig.colors[i];
         colorNumberBox.textContent = i + 1;
-        let defaultColor = "#000000";  
         if (tooDark(creeperConfig.colors[i])) {
             colorNumberBox.style.color = "#ffffff";
         }
-    
+
         const finishBar = document.createElement("div");
         finishBar.classList.add("finish-bar");
-        finishBar.classList.add("hidden");
+        //finishBar.classList.add("hidden");
+        finishBar.style.visibility = "hidden";
 
         const barFill = document.createElement("div");
         barFill.classList.add("bar-fill");
-
-
 
         // ----
 
@@ -190,12 +190,10 @@ function renderPixels() {
 
         // Event listeners
         colorNumberBox.addEventListener("click", () => {
-            console.log(i);
-            colorSelected(i);
-            finishBarShow(i);
+            selectColor(i);
         });
     }
-} 
+}
 // Easier way
 /* function renderPalette() {
     palletteBox.innerHTML = ""; // Temizle
@@ -235,15 +233,38 @@ function goBack() {
     templates.classList.remove("hidden");
 }
 
-function colorSelected(i) {
-    const colorNumberBox = document.getElementsByClassName("color-number-box")[i];
-    colorNumberBox.classList.add("selected");
+function selectColor(i) {
+    const colorNumberBoxes = document.getElementsByClassName("color-number-box");
+    const finishBars = document.getElementsByClassName("finish-bar");
+
+    // Cleanup
+    for (let n = 0; n < colorNumberBoxes.length; n++) {
+        colorNumberBoxes[n].classList.remove("selected");
+    }
+    for (let n = 0; n < finishBars.length; n++) {
+        //finishBars[n].classList.add("hidden");
+        finishBars[n].style.visibility = "hidden";
+    }
+
+    // Show selected color and finish bar
+    colorNumberBoxes[i].classList.add("selected");
+    //finishBars[i].classList.remove("hidden");
+    finishBars[i].style.visibility = "visible";
+
+    // Highlight selected pixels
+    const pixels = pixelBox.children;
+    for (let p = 0; p < pixels.length; p++) {
+        pixels[p].classList.remove("enabled");
+        pixels[p].classList.remove("disabled");
+
+        if (pixels[p].textContent == i + 1) {
+            pixels[p].classList.add("enabled");
+        } else {
+            pixels[p].classList.add("disabled");
+        }
+    }
 }
 
-function finishBarShow(i) {
-    const finishBar = document.getElementsByClassName("finish-bar")[i];
-    finishBar.classList.remove("hidden");
-}
 
 function replayGame() { }
 
