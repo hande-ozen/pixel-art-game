@@ -19,6 +19,7 @@ const thumbnails = document.getElementsByClassName("thumbnail");
 //Game Logic
 
 let artboardWidth = 0; // Will be set when the artboard is opened
+let selectedColor = "";
 
 // ======================================================================= //
 
@@ -117,8 +118,6 @@ for (let i = 0; i < thumbnails.length; i++) {
     thumbnails[i].onclick = openArtboard;
 }
 
-
-
 // ======================================================================= //
 
 // Functions
@@ -153,7 +152,25 @@ function renderPixels() {
             }
         }
         pixelBox.appendChild(pixel);
+        pixel.addEventListener("click", () => {
+            selectPixel(i);
+        });
     }
+}
+
+function selectPixel(i) {
+    // Seçilen pikseli renk ile doldur
+    const p = pixelBox.children[i];
+    if (p.classList.contains("enabled") == true) {
+        p.style.backgroundColor = selectedColor;
+        p.classList.remove("enabled");
+        p.textContent = "";
+
+    }
+    /**
+     * TODO:
+     * 4. (BONUS) Eğer ayni renketi tüm pikseller boyandıysa, secilen palet rengindeki selected'i kaldir, ortaligi temizle
+     */
 }
 
 function renderPalette() {
@@ -194,39 +211,6 @@ function renderPalette() {
         });
     }
 }
-// Easier way
-/* function renderPalette() {
-    palletteBox.innerHTML = ""; // Temizle
-    for (let i = 0; i < creeperConfig.colors.length; i++) {
-        let textColor = "#000000";
-        if (tooDark(creeperConfig.colors[i])) {
-            textColor = "#ffffff";
-        }
-        const htmlString = `
-        <div class="color-box">
-            <div class="color-number-box" style="background-color: ${creeperConfig.colors[i]}; color: ${textColor}">${i + 1}</div>
-            <div class="finish-bar">
-                <div class="bar-fill"></div>
-            </div>
-        </div>
-        `;
-        palletteBox.innerHTML += htmlString;
-
-        // Event listeners
-        const colorNumberBox = document.getElementsByClassName("color-number-box")[i];
-        //colorNumberBox.onclick = colorSelected;
-        //colorNumberBox.onclick = function () { colorSelected(i) };
-        //colorNumberBox.addEventListener("click", function () { colorSelected(i) });
-        //colorNumberBox.addEventListener("click", () => colorSelected(i)); // Arrow function
-        colorNumberBox.addEventListener("click", (e) => {
-            console.log(i);
-            e.target.classList.add("selected");
-        });
-
-        // BOK OLDU (olmadi)
-    }
-} */
-
 
 function goBack() {
     game.classList.add("hidden");
@@ -259,12 +243,13 @@ function selectColor(i) {
 
         if (pixels[p].textContent == i + 1) {
             pixels[p].classList.add("enabled");
-        } else {
+        } else if (pixels[p].textContent != "") {
             pixels[p].classList.add("disabled");
         }
     }
-}
 
+    selectedColor = creeperConfig.colors[i];
+}
 
 function replayGame() { }
 
