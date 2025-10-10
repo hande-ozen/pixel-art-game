@@ -166,11 +166,38 @@ function selectPixel(i) {
         p.classList.remove("enabled");
         p.textContent = "";
 
+        // Find the selected color index
+        for (let x = 0; x < creeperConfig.colors.length; x++) {
+            const seciliRenginYazisi = x + 1;
+            const seciliRenginIndexi = x;
+
+            if (selectedColor == creeperConfig.colors[seciliRenginIndexi]) {
+                p.classList.add("filled" + seciliRenginIndexi);
+                
+                const barFill = document.getElementsByClassName("bar-fill")[seciliRenginIndexi];
+                const tumSeciliRenktekiPikseller = [];
+                const doluPixeller = [];
+
+                for (let n = 0; n < pixelBox.children.length; n++) {
+                    if (pixelBox.children[n].textContent == seciliRenginYazisi) {
+                        tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
+                    } else if (pixelBox.children[n].classList.contains("filled" + seciliRenginIndexi)) {
+                        tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
+                        doluPixeller.push(pixelBox.children[n]);
+                    }
+                }
+                console.log("tumSeciliRenktekiPikseller: ", tumSeciliRenktekiPikseller);
+                console.log("doluPixeller: ", doluPixeller);
+                // doluPixeller / tumSeciliRenktekiPikseller * 100
+                const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
+                barFill.style.width = percentage + "%";
+
+                break;
+            }
+        }
     }
-    /**
-     * TODO:
-     * 4. (BONUS) Eğer ayni renketi tüm pikseller boyandıysa, secilen palet rengindeki selected'i kaldir, ortaligi temizle
-     */
+
+
 }
 
 function renderPalette() {
@@ -249,9 +276,17 @@ function selectColor(i) {
     }
 
     selectedColor = creeperConfig.colors[i];
+
+
+
+
+
 }
 
+
 function replayGame() { }
+
+function restart() { }
 
 function scrollPaletteLeft() { }
 
