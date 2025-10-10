@@ -173,7 +173,7 @@ function selectPixel(i) {
 
             if (selectedColor == creeperConfig.colors[seciliRenginIndexi]) {
                 p.classList.add("filled" + seciliRenginIndexi);
-                
+
                 const barFill = document.getElementsByClassName("bar-fill")[seciliRenginIndexi];
                 const tumSeciliRenktekiPikseller = [];
                 const doluPixeller = [];
@@ -186,12 +186,12 @@ function selectPixel(i) {
                         doluPixeller.push(pixelBox.children[n]);
                     }
                 }
-                console.log("tumSeciliRenktekiPikseller: ", tumSeciliRenktekiPikseller);
-                console.log("doluPixeller: ", doluPixeller);
-                // doluPixeller / tumSeciliRenktekiPikseller * 100
+
                 const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
                 barFill.style.width = percentage + "%";
-
+                if (percentage == 100) {
+                    colorFinished(seciliRenginIndexi);
+                }
                 break;
             }
         }
@@ -248,41 +248,67 @@ function selectColor(i) {
     const colorNumberBoxes = document.getElementsByClassName("color-number-box");
     const finishBars = document.getElementsByClassName("finish-bar");
 
-    // Cleanup
-    for (let n = 0; n < colorNumberBoxes.length; n++) {
-        colorNumberBoxes[n].classList.remove("selected");
+    if (colorNumberBoxes[i].classList.contains("done") == false) {
+
+        // Cleanup
+        for (let n = 0; n < colorNumberBoxes.length; n++) {
+            colorNumberBoxes[n].classList.remove("selected");
+        }
+        for (let n = 0; n < finishBars.length; n++) {
+            //finishBars[n].classList.add("hidden");
+            finishBars[n].style.visibility = "hidden";
+        }
+
+        // Show selected color and finish bar
+        colorNumberBoxes[i].classList.add("selected");
+        //finishBars[i].classList.remove("hidden");
+        finishBars[i].style.visibility = "visible";
+
+        // Highlight selected pixels
+        const pixels = pixelBox.children;
+        for (let p = 0; p < pixels.length; p++) {
+            pixels[p].classList.remove("enabled");
+            pixels[p].classList.remove("disabled");
+
+            if (pixels[p].textContent == i + 1) {
+                pixels[p].classList.add("enabled");
+            } else if (pixels[p].textContent != "") {
+                pixels[p].classList.add("disabled");
+            }
+        }
+
+        selectedColor = creeperConfig.colors[i];
     }
-    for (let n = 0; n < finishBars.length; n++) {
-        //finishBars[n].classList.add("hidden");
-        finishBars[n].style.visibility = "hidden";
-    }
+}
 
-    // Show selected color and finish bar
-    colorNumberBoxes[i].classList.add("selected");
-    //finishBars[i].classList.remove("hidden");
-    finishBars[i].style.visibility = "visible";
+function colorFinished(i) {
+    //const colorNumberBoxes = [...document.getElementsByClassName("color-number-box")];
+    const colorNumberBoxes = Array.from(document.getElementsByClassName("color-number-box")); // find() fonksiyonu icin GERCEK array lazim
+    colorNumberBoxes[i].classList.add("done");
 
-    // Highlight selected pixels
-    const pixels = pixelBox.children;
-    for (let p = 0; p < pixels.length; p++) {
-        pixels[p].classList.remove("enabled");
-        pixels[p].classList.remove("disabled");
+    colorNumberBoxes[i].innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
 
-        if (pixels[p].textContent == i + 1) {
-            pixels[p].classList.add("enabled");
-        } else if (pixels[p].textContent != "") {
-            pixels[p].classList.add("disabled");
+    // Check if all done
+    let herhangiBitmeyenVarMi = false;
+
+    /* for (let n = 0; n < colorNumberBoxes.length; n++) {
+        if(colorNumberBoxes[n].classList.contains("done") == false) {
+            herhangiBitmeyenVarMi = true;
+            break;
         }
     }
 
-    selectedColor = creeperConfig.colors[i];
+    if (herhangiBitmeyenVarMi == false) {
+        allFinished();
+    } */
 
-
-
-
-
+    if (!colorNumberBoxes.find((box) => box.classList.contains("done") == false))
+        allFinished();
 }
 
+function allFinished() {
+    console.log("Tebrikler, hepsini bitirdiniz!");
+}
 
 function replayGame() { }
 

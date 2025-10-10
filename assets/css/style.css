@@ -251,7 +251,7 @@ button {
 .bar-fill {
     width: 0%;
     height: 100%;
-    transition: width 900ms ease-in-out;
+    transition: width 500ms ease-in-out;
     background-color: var(--background-color);
     border-radius: 30px;
 }
