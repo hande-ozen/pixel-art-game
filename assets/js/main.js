@@ -12,6 +12,7 @@ const palletteBox = document.getElementById("colorsBox");
 const startBtn = document.getElementById("startBtn");
 const backBtn = document.getElementById("backBtn");
 const replayBtn = document.getElementById("replayBtn");
+const trashBtn = document.getElementById("trashBtn");
 const btnPaletteLeft = document.getElementById("btnPaletteLeft");
 const btnPaletteRight = document.getElementById("btnPaletteRight");
 const thumbnails = document.getElementsByClassName("thumbnail");
@@ -26,7 +27,7 @@ let selectedColor = "";
 const creeperConfig = {
     width: 8,
     height: 8,
-    colors: ["#70C47A", "#C6FFA8", "#000000",]
+    colors: ["#70C47A", "#C6FFA8", "#000000"]
 };
 
 const creeper = [
@@ -109,14 +110,19 @@ const creeper = [
 
 startBtn.onclick = startGame;
 backBtn.onclick = goBack;
-replayBtn.onclick = replayGame;
-btnPaletteLeft.onclick = scrollPaletteLeft;
-btnPaletteRight.onclick = scrollPaletteRight;
+btnPaletteLeft.addEventListener("click", () => {
+    palletteBox.scrollBy({ left : -87, behavior : "smooth" });
+});
+btnPaletteRight.addEventListener("click", () => {
+    palletteBox.scrollBy({ left : 87, behavior : "smooth" });
+});
 
 
 for (let i = 0; i < thumbnails.length; i++) {
     thumbnails[i].onclick = openArtboard;
 }
+
+trashBtn.onclick = playAgain;
 
 // ======================================================================= //
 
@@ -146,7 +152,6 @@ function renderPixels() {
         pixel.style.backgroundColor = convertToGray(creeper[i]);
         for (let x = 0; x < creeperConfig.colors.length; x++) { // Renklerden birine eşitse}
             if (creeper[i] == creeperConfig.colors[x]) {
-                pixel.dataset.colorIndex = x;
                 pixel.textContent = x + 1;
                 break;
             }
@@ -157,6 +162,7 @@ function renderPixels() {
         });
     }
 }
+
 
 function selectPixel(i) {
     // Seçilen pikseli renk ile doldur
@@ -289,8 +295,8 @@ function colorFinished(i) {
     colorNumberBoxes[i].innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
 
     // Check if all done
-    let herhangiBitmeyenVarMi = false;
 
+    let herhangiBitmeyenVarMi = false;
     /* for (let n = 0; n < colorNumberBoxes.length; n++) {
         if(colorNumberBoxes[n].classList.contains("done") == false) {
             herhangiBitmeyenVarMi = true;
@@ -308,15 +314,36 @@ function colorFinished(i) {
 
 function allFinished() {
     console.log("Tebrikler, hepsini bitirdiniz!");
+    replayBtn.classList.remove("hidden");
+    trashBtn.classList.remove("hidden");
+    showPopUp();
+    setTimeout(() => {
+        hidePopUp();
+      }, 3000);
 }
 
-function replayGame() { }
+function showPopUp() {
+    popUp.classList.remove("hidden");
+    // Biraz gecikmeli class ekleyerek animasyonu tetikle
+    setTimeout(() => {
+      popUp.classList.add("show");
+    }, 10);
+  }
+  
+  function hidePopUp() {
+    popUp.classList.remove("show");
+    setTimeout(() => {
+      popUp.classList.add("hidden");
+    }, 500);
+  }
 
-function restart() { }
-
-function scrollPaletteLeft() { }
-
-function scrollPaletteRight() { }
+  function playAgain() {
+    confirm("Are you sure you want to delete your work?");
+    if (confirm) {
+        renderPixels();
+        renderPalette();
+    }
+  }
 
 // ============================= HELPER FUNCTIONS =========================================
 

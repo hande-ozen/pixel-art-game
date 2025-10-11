@@ -291,4 +291,13 @@ button {
     background-color: #FFE489aa;
     border-radius: 30px;
     border: 2px solid var(--secondary-color);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    perspective: 1000px;
+    z-index: 1000;
+    transform: scale3d(0.1, 0.1, 1);
+}
+
+#pop-up.show {
+    transform: scale3d(1, 1, 1) translateZ(0);
+    opacity: 1;
 }
