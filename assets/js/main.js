@@ -111,10 +111,10 @@ const creeper = [
 startBtn.onclick = startGame;
 backBtn.onclick = goBack;
 btnPaletteLeft.addEventListener("click", () => {
-    palletteBox.scrollBy({ left : -87, behavior : "smooth" });
+    palletteBox.scrollBy({ left: -87, behavior: "smooth" });
 });
 btnPaletteRight.addEventListener("click", () => {
-    palletteBox.scrollBy({ left : 87, behavior : "smooth" });
+    palletteBox.scrollBy({ left: 87, behavior: "smooth" });
 });
 
 
@@ -316,34 +316,69 @@ function allFinished() {
     console.log("Tebrikler, hepsini bitirdiniz!");
     replayBtn.classList.remove("hidden");
     trashBtn.classList.remove("hidden");
+    var count = 200;
+    var defaults = {
+        origin: { y: 0.7 }
+    };
+
+    function fire(particleRatio, opts) {
+        confetti({
+            ...defaults,
+            ...opts,
+            particleCount: Math.floor(count * particleRatio)
+        });
+    }
+
+    fire(0.25, {
+        spread: 26,
+        startVelocity: 55,
+    });
+    fire(0.2, {
+        spread: 60,
+    });
+    fire(0.35, {
+        spread: 100,
+        decay: 0.91,
+        scalar: 0.8
+    });
+    fire(0.1, {
+        spread: 120,
+        startVelocity: 25,
+        decay: 0.92,
+        scalar: 1.2
+    });
+    fire(0.1, {
+        spread: 120,
+        startVelocity: 45,
+    });
     showPopUp();
     setTimeout(() => {
         hidePopUp();
-      }, 3000);
+    }, 3000);
 }
 
 function showPopUp() {
     popUp.classList.remove("hidden");
     // Biraz gecikmeli class ekleyerek animasyonu tetikle
     setTimeout(() => {
-      popUp.classList.add("show");
+        popUp.classList.add("show");
     }, 10);
-  }
-  
-  function hidePopUp() {
+}
+
+function hidePopUp() {
     popUp.classList.remove("show");
     setTimeout(() => {
-      popUp.classList.add("hidden");
+        popUp.classList.add("hidden");
     }, 500);
-  }
+}
 
-  function playAgain() {
+function playAgain() {
     confirm("Are you sure you want to delete your work?");
     if (confirm) {
         renderPixels();
         renderPalette();
     }
-  }
+}
 
 // ============================= HELPER FUNCTIONS =========================================
 
