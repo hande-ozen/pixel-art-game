@@ -7,85 +7,20 @@ const creeperConfig = {
 };
 
 const creeper = [
-    "#70C47A",
-    "#70C47A",
-    "#C6FFA8",
-    "#C6FFA8",
-    "#70C47A",
-    "#70C47A",
-    "#70C47A",
-    "#C6FFA8",
-
-    "#70C47A",
-    "#70C47A",
-    "#C6FFA8",
-    "#70C47A",
-    "#C6FFA8",
-    "#C6FFA8",
-    "#70C47A",
-    "#70C47A",
-
-    "#C6FFA8",
-    "#000000",
-    "#000000",
-    "#70C47A",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#70C47A",
-
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#C6FFA8",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#70C47A",
-
-    "#C6FFA8",
-    "#70C47A",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#C6FFA8",
-    "#C6FFA8",
-    "#70C47A",
-
-    "#70C47A",
-    "#C6FFA8",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#70C47A",
-    "#C6FFA8",
-
-    "#C6FFA8",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#C6FFA8",
-    "#70C47A",
-
-    "#70C47A",
-    "#C6FFA8",
-    "#000000",
-    "#70C47A",
-    "#70C47A",
-    "#000000",
-    "#C6FFA8",
-    "#70C47A",
+    "#70C47A", "#70C47A", "#C6FFA8", "#C6FFA8", "#70C47A", "#70C47A", "#70C47A", "#C6FFA8",
+    "#70C47A", "#70C47A", "#C6FFA8", "#70C47A", "#C6FFA8", "#C6FFA8", "#70C47A", "#70C47A",
+    "#C6FFA8", "#000000", "#000000", "#70C47A", "#70C47A", "#000000", "#000000", "#70C47A",
+    "#70C47A", "#000000", "#000000", "#C6FFA8", "#70C47A", "#000000", "#000000", "#70C47A",
+    "#C6FFA8", "#70C47A", "#70C47A", "#000000", "#000000", "#C6FFA8", "#C6FFA8", "#70C47A",
+    "#70C47A", "#C6FFA8", "#000000", "#000000", "#000000", "#000000", "#70C47A", "#C6FFA8",
+    "#C6FFA8", "#70C47A", "#000000", "#000000", "#000000", "#000000", "#C6FFA8", "#70C47A",
+    "#70C47A", "#C6FFA8", "#000000", "#70C47A", "#70C47A", "#000000", "#C6FFA8", "#70C47A",
 ]
 
-const paket = {
-    config: creeperConfig,
-    pixels: creeper
-}
-
 if (templates) {
-    templates.push(paket);
-    console.log(paket.config.name + " injected");
-} else console.log("couldn't inject " + paket.config.name);
+    templates.push({
+        config: creeperConfig,
+        pixels: creeper
+    });
+    console.log(creeperConfig.name + " injected");
+} else console.log("couldn't inject " + creeperConfig.name);

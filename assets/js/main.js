@@ -40,11 +40,16 @@ loadTemplates();
 
 startBtn.onclick = startGame;
 backBtn.onclick = goBack;
+
 btnPaletteLeft.addEventListener("click", () => {
     palletteBox.scrollBy({ left: -87, behavior: "smooth" });
 });
 btnPaletteRight.addEventListener("click", () => {
     palletteBox.scrollBy({ left: 87, behavior: "smooth" });
+});
+
+document.addEventListener("mouseup", () => {
+    drawing = false;
 });
 
 
@@ -80,10 +85,10 @@ function startGame() {
 function openArtboard(i, templateName) {
     // Set globale selected template name
     selectedTemplateName = templateName;
-    const template =  templates.find((temp) => {
+    const template = templates.find((temp) => {
         return temp.config.name == templateName;
     });
-    if(!template) {
+    if (!template) {
         alert("Coming soon..");
         return;
     }
@@ -113,6 +118,22 @@ function openArtboard(i, templateName) {
         renderPalette(false);
     }
 
+    const history = localStorage.getItem(selectedTemplateName + "_history")
+    if (history) {
+        const array = history.split(',');
+        renderPixels(false)
+        for (let x = 0; x < array.length; x++) {
+            const siradakiPixel = pixelBox.children[array[x]];
+            const renk = siradakiPixel.getAttribute("data-original-color");
+            const dogruBarFill = Array.from(document.getElementsByClassName("bar-fill")).find((bf) => {
+                return bf.getAttribute("data-original-color") == renk
+            });
+
+            selectPixel(array[x], false, true);
+            barFillDoldur(dogruBarFill, renk, false, true);
+        }
+    }
+
 }
 
 function renderPixels(bitmisse) {
@@ -122,12 +143,17 @@ function renderPixels(bitmisse) {
         const pixel = document.createElement("div");
         pixel.style.width = artboardWidth / selectedTemplateConfig.width + "px";
         pixel.style.height = artboardWidth / selectedTemplateConfig.width + "px";
+
         if (bitmisse == true) {
             pixel.style.backgroundColor = selectedTemplatePixels[i];
         } else {
-            pixel.style.backgroundColor = convertToGray(selectedTemplatePixels[i]);
             pixel.setAttribute("data-original-color", selectedTemplatePixels[i]);
+            pixel.style.backgroundColor = convertToGray(selectedTemplatePixels[i]);
         }
+
+        if (pixel.getAttribute("data-original-color") == "")
+            pixel.style.background = "none";
+
         for (let x = 0; x < selectedTemplateConfig.colors.length; x++) { // Renklerden birine eşitse}
             if (selectedTemplatePixels[i] == selectedTemplateConfig.colors[x] && !bitmisse) {
                 pixel.textContent = x + 1;
@@ -141,17 +167,14 @@ function renderPixels(bitmisse) {
                 drawing = true;
             }
         });
-        pixel.addEventListener("mouseup", () => {
-            drawing = false;
-        });
         pixel.addEventListener("mouseenter", () => {
-            if(drawing && pixel.classList.contains("enabled")) selectPixel(i, true);
+            if (drawing && pixel.classList.contains("enabled")) selectPixel(i, true);
         })
     }
 }
 
 
-function selectPixel(i, addHistory) {
+function selectPixel(i, addHistory, sessizMod) {
     // Seçilen pikseli renk ile doldur
     const p = pixelBox.children[i];
     const gercekRenk = p.getAttribute("data-original-color");
@@ -164,47 +187,21 @@ function selectPixel(i, addHistory) {
     if (addHistory == true) {
         // into localStorage
         clickHistory(i);
-        
+
         // fillBar
-        const doluPixeller = Array.from(pixelBox.children).filter((pixel) => { return pixel.textContent == "" && pixel.getAttribute("data-original-color") == gercekRenk });
-        const tumSeciliRenktekiPikseller = Array.from(pixelBox.children).filter((pixel) => { return pixel.getAttribute("data-original-color") == gercekRenk });
-        const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
-        selectedBarFill.style.width = percentage + "%";
-        if (percentage == 100) {
-            colorFinished(selectedBarFill.parentElement.previousSibling, true);
-        }
+        barFillDoldur(selectedBarFill, gercekRenk, true, sessizMod);
     }
+}
 
-    // Find the selected color index
-    /* for (let x = 0; x < selectedTemplateConfig.colors.length; x++) {
-        const seciliRenginYazisi = x + 1;
-        const seciliRenginIndexi = x;
+function barFillDoldur(hangiBarfill, renk, checkAllFinished, sessizMod) {
+    const doluPixeller = Array.from(pixelBox.children).filter((pixel) => { return pixel.textContent == "" && pixel.getAttribute("data-original-color") == renk });
+    const tumSeciliRenktekiPikseller = Array.from(pixelBox.children).filter((pixel) => { return pixel.getAttribute("data-original-color") == renk });
+    const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
 
-        if (selectedColor == selectedTemplateConfig.colors[seciliRenginIndexi]) {
-            p.classList.add("filled" + seciliRenginIndexi);
-
-            const barFill = document.getElementsByClassName("bar-fill")[seciliRenginIndexi];
-            const tumSeciliRenktekiPikseller = [];
-            const doluPixeller = [];
-
-            for (let n = 0; n < pixelBox.children.length; n++) {
-                if (pixelBox.children[n].textContent == seciliRenginYazisi) {
-                    tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
-                } else if (pixelBox.children[n].classList.contains("filled" + seciliRenginIndexi)) {
-                    tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
-                    doluPixeller.push(pixelBox.children[n]);
-                }
-            }
-
-            const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
-            barFill.style.width = percentage + "%";
-            if (percentage == 100) {
-                colorFinished(seciliRenginIndexi, true);
-            }
-            break;
-        }
-    } */
-
+    hangiBarfill.style.width = percentage + "%";
+    if (percentage == 100) {
+        colorFinished(hangiBarfill.parentElement.previousSibling, checkAllFinished, sessizMod);
+    }
 }
 
 function clickHistory(i) {
@@ -224,7 +221,7 @@ async function showClickHistory() {
     for (let x = 0; x < array.length; x++) {
         //const siradakiPixel = pixelBox.children[array[x]];
         selectPixel(array[x], false);
-        
+
         // 25ms sleep
         await new Promise(res => setTimeout(res, 25));
     }
@@ -260,6 +257,7 @@ function renderPalette(bitmisse) {
 
         const barFill = document.createElement("div");
         barFill.classList.add("bar-fill");
+        barFill.setAttribute("data-original-color", selectedTemplateConfig.colors[i]);
 
         // ----
 
@@ -270,7 +268,7 @@ function renderPalette(bitmisse) {
         palletteBox.appendChild(colorBox);
 
         if (bitmisse) {
-            colorFinished(colorNumberBox, false)
+            colorFinished(colorNumberBox, false, true)
         }
     }
 }
@@ -319,15 +317,25 @@ function selectColor(i) {
     selectedBarFill = finishBars[i].children[0];
 }
 
-function colorFinished(colorBox, checkAllFinished) {
+function colorFinished(colorBox, checkAllFinished, sessizMod) {
     const colorNumberBoxes = [...document.getElementsByClassName("color-number-box")];
     colorBox.classList.add("done");
 
     colorBox.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
 
     // Check if all done
-    if (checkAllFinished == true && !colorNumberBoxes.find((box) => box.classList.contains("done") == false))
+    if (checkAllFinished == true && !colorNumberBoxes.find((box) => box.classList.contains("done") == false)) {
         allFinished();
+    }
+    else if (!sessizMod) {
+        confetti({
+            particleCount: 30,
+            spread: 60,
+            origin: { y: 0.9 },
+            startVelocity: 20,
+        });
+    }
+
 }
 
 function allFinished() {
@@ -340,7 +348,6 @@ function allFinished() {
     };
 
     localStorage.setItem(selectedTemplateName + "_done", 1);
-
 
     function fire(particleRatio, opts) {
         confetti({
@@ -406,8 +413,8 @@ function playAgain() {
 }
 
 function loadTemplates() {
-    for(const thumb of thumbnails) {
-        if(thumb.getAttribute("data-file")) {
+    for (const thumb of thumbnails) {
+        if (thumb.getAttribute("data-file")) {
             const js = document.createElement("script");
             js.src = thumb.getAttribute("data-file");
             document.head.appendChild(js);
