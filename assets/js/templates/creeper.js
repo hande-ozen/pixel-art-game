@@ -1,3 +1,5 @@
+//Creeper 8x8
+
 const creeperConfig = {
     name: "creeper",
     width: 8,
