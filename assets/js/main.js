@@ -6,6 +6,7 @@ const game = document.getElementById("page-artboard");
 const popUp = document.getElementById("pop-up");
 const pixelBox = document.getElementById("pixelBox");
 const palletteBox = document.getElementById("colorsBox");
+const artboard = document.getElementById("artboard")
 
 // Buttons
 
@@ -79,12 +80,22 @@ function startGame() {
 function openArtboard(i, templateName) {
     // Set globale selected template name
     selectedTemplateName = templateName;
-    selectedTemplateConfig = templates.find((t) => {
-        return t.config.name == templateName;
-    }).config;
-    selectedTemplatePixels = templates.find((t) => {
-        return t.config.name == templateName;
-    }).pixels;
+    const template =  templates.find((temp) => {
+        return temp.config.name == templateName;
+    });
+    if(!template) {
+        alert("Coming soon..");
+        return;
+    }
+    selectedTemplateConfig = template.config;
+    selectedTemplatePixels = template.pixels;
+
+    // Set mode
+    if (selectedTemplateConfig.mode == "light") {
+        artboard.style.background = "#ffffff";
+    } else if (selectedTemplateConfig.mode == "dark") {
+        artboard.style.background = "#303030";
+    }
 
     elem_templates.classList.add("hidden");
     game.classList.remove("hidden");

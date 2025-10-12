@@ -2,6 +2,7 @@ const creeperConfig = {
     name: "creeper",
     width: 8,
     height: 8,
+    mode: "light",
     colors: ["#70C47A", "#C6FFA8", "#000000"]
 };
 
@@ -86,5 +87,5 @@ const paket = {
 
 if (templates) {
     templates.push(paket);
-    console.log("injected");
-} else console.log("couldn't inject");
+    console.log(paket.config.name + " injected");
+} else console.log("couldn't inject " + paket.config.name);
