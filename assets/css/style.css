@@ -112,10 +112,6 @@ button {
     outline: none;
 }
 
-.container>img.finish {
-    box-shadow: none;
-}
-
 .artboard {
     position: relative;
     padding: 50px;

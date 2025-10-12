@@ -21,6 +21,7 @@ const thumbnails = document.getElementsByClassName("thumbnail");
 
 let artboardWidth = 0; // Will be set when the artboard is opened
 let selectedColor = "";
+let selectedTemplate = "";
 
 // ======================================================================= //
 
@@ -118,8 +119,20 @@ btnPaletteRight.addEventListener("click", () => {
 });
 
 
+// Initialize thumbnails
 for (let i = 0; i < thumbnails.length; i++) {
-    thumbnails[i].onclick = openArtboard;
+    // Set finished image
+    const templateName = thumbnails[i].getAttribute("data-template"); // ex. "creeper"
+    const bitmisMi = localStorage.getItem(templateName + "_done"); // ex. 1, or null
+    if (bitmisMi == 1) {
+        const bitmisImg = thumbnails[i].getAttribute("data-finish-img");
+        thumbnails[i].setAttribute("src", bitmisImg);
+    }
+
+    // Set click event
+    thumbnails[i].addEventListener("click", () => {
+        openArtboard(i, templateName);
+    });
 }
 
 trashBtn.onclick = playAgain;
@@ -133,25 +146,42 @@ function startGame() {
     templates.classList.remove("hidden");
 }
 
-function openArtboard() {
+function openArtboard(i, templateName) {
+    // Set globale selected template name
+    selectedTemplate = templateName;
+
     templates.classList.add("hidden");
     game.classList.remove("hidden");
     artboardWidth = pixelBox.offsetWidth;
 
-    renderPixels();
-    renderPalette();
+
+    if (localStorage.getItem(selectedTemplate + "_done") == 1) {
+        renderPixels(true);
+        renderPalette(true);
+
+        replayBtn.classList.remove("hidden");
+        trashBtn.classList.remove("hidden");
+    } else {
+        renderPixels(false);
+        renderPalette(false);
+    }
+
 }
 
-function renderPixels() {
+function renderPixels(bitmisse) {
     // Ekrana pikselleri <div> olarak ekle
     pixelBox.innerHTML = ""; // Temizle
     for (let i = 0; i < creeper.length; i++) {
         const pixel = document.createElement("div");
         pixel.style.width = artboardWidth / creeperConfig.width + "px";
         pixel.style.height = artboardWidth / creeperConfig.width + "px";
-        pixel.style.backgroundColor = convertToGray(creeper[i]);
+        if (bitmisse == true) {
+            pixel.style.backgroundColor = creeper[i];
+        } else {
+            pixel.style.backgroundColor = convertToGray(creeper[i]);
+        }
         for (let x = 0; x < creeperConfig.colors.length; x++) { // Renklerden birine eşitse}
-            if (creeper[i] == creeperConfig.colors[x]) {
+            if (creeper[i] == creeperConfig.colors[x] && !bitmisse) {
                 pixel.textContent = x + 1;
                 break;
             }
@@ -171,6 +201,10 @@ function selectPixel(i) {
         p.style.backgroundColor = selectedColor;
         p.classList.remove("enabled");
         p.textContent = "";
+
+        // TODO: -hafizaya almak
+        clickHistory(i);
+
 
         // Find the selected color index
         for (let x = 0; x < creeperConfig.colors.length; x++) {
@@ -196,7 +230,7 @@ function selectPixel(i) {
                 const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
                 barFill.style.width = percentage + "%";
                 if (percentage == 100) {
-                    colorFinished(seciliRenginIndexi);
+                    colorFinished(seciliRenginIndexi, true);
                 }
                 break;
             }
@@ -206,18 +240,35 @@ function selectPixel(i) {
 
 }
 
-function renderPalette() {
+function clickHistory(i) {
+    const eskiDeger = localStorage.getItem(selectedTemplate + "_history");
+
+    if (eskiDeger == null) {
+        localStorage.setItem(selectedTemplate + "_history", i)
+    } else {
+        localStorage.setItem(selectedTemplate + "_history", eskiDeger + "," + i)
+    }
+}
+
+function renderPalette(bitmisse) {
     // Paleti renklerini renderla
     palletteBox.innerHTML = ""; // Temizle
     for (let i = 0; i < creeperConfig.colors.length; i++) {
-
         const colorBox = document.createElement("div");
         colorBox.classList.add("color-box");
 
         const colorNumberBox = document.createElement("div");
         colorNumberBox.classList.add("color-number-box");
         colorNumberBox.style.backgroundColor = creeperConfig.colors[i];
-        colorNumberBox.textContent = i + 1;
+
+        if (!bitmisse) {
+            colorNumberBox.textContent = i + 1;
+            // Event listeners
+            colorNumberBox.addEventListener("click", () => {
+                selectColor(i);
+            });
+        }
+
         if (tooDark(creeperConfig.colors[i])) {
             colorNumberBox.style.color = "#ffffff";
         }
@@ -238,10 +289,9 @@ function renderPalette() {
 
         palletteBox.appendChild(colorBox);
 
-        // Event listeners
-        colorNumberBox.addEventListener("click", () => {
-            selectColor(i);
-        });
+        if (bitmisse) {
+            colorFinished(i, false)
+        }
     }
 }
 
@@ -287,7 +337,7 @@ function selectColor(i) {
     }
 }
 
-function colorFinished(i) {
+function colorFinished(i, checkAllFinished) {
     //const colorNumberBoxes = [...document.getElementsByClassName("color-number-box")];
     const colorNumberBoxes = Array.from(document.getElementsByClassName("color-number-box")); // find() fonksiyonu icin GERCEK array lazim
     colorNumberBoxes[i].classList.add("done");
@@ -308,7 +358,7 @@ function colorFinished(i) {
         allFinished();
     } */
 
-    if (!colorNumberBoxes.find((box) => box.classList.contains("done") == false))
+    if (checkAllFinished == true && !colorNumberBoxes.find((box) => box.classList.contains("done") == false))
         allFinished();
 }
 
@@ -320,6 +370,9 @@ function allFinished() {
     var defaults = {
         origin: { y: 0.7 }
     };
+
+    localStorage.setItem(selectedTemplate + "_done", 1);
+
 
     function fire(particleRatio, opts) {
         confetti({
@@ -373,10 +426,11 @@ function hidePopUp() {
 }
 
 function playAgain() {
-    confirm("Are you sure you want to delete your work?");
-    if (confirm) {
+    const cevap = confirm("Are you sure you want to delete your work?");
+    if (cevap) {
         renderPixels();
         renderPalette();
+        localStorage.removeItem(selectedTemplate + "_done")
     }
 }
 
