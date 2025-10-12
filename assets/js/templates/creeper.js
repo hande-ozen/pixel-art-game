@@ -1,0 +1,90 @@
+const creeperConfig = {
+    name: "creeper",
+    width: 8,
+    height: 8,
+    colors: ["#70C47A", "#C6FFA8", "#000000"]
+};
+
+const creeper = [
+    "#70C47A",
+    "#70C47A",
+    "#C6FFA8",
+    "#C6FFA8",
+    "#70C47A",
+    "#70C47A",
+    "#70C47A",
+    "#C6FFA8",
+
+    "#70C47A",
+    "#70C47A",
+    "#C6FFA8",
+    "#70C47A",
+    "#C6FFA8",
+    "#C6FFA8",
+    "#70C47A",
+    "#70C47A",
+
+    "#C6FFA8",
+    "#000000",
+    "#000000",
+    "#70C47A",
+    "#70C47A",
+    "#000000",
+    "#000000",
+    "#70C47A",
+
+    "#70C47A",
+    "#000000",
+    "#000000",
+    "#C6FFA8",
+    "#70C47A",
+    "#000000",
+    "#000000",
+    "#70C47A",
+
+    "#C6FFA8",
+    "#70C47A",
+    "#70C47A",
+    "#000000",
+    "#000000",
+    "#C6FFA8",
+    "#C6FFA8",
+    "#70C47A",
+
+    "#70C47A",
+    "#C6FFA8",
+    "#000000",
+    "#000000",
+    "#000000",
+    "#000000",
+    "#70C47A",
+    "#C6FFA8",
+
+    "#C6FFA8",
+    "#70C47A",
+    "#000000",
+    "#000000",
+    "#000000",
+    "#000000",
+    "#C6FFA8",
+    "#70C47A",
+
+    "#70C47A",
+    "#C6FFA8",
+    "#000000",
+    "#70C47A",
+    "#70C47A",
+    "#000000",
+    "#C6FFA8",
+    "#70C47A",
+]
+
+const paket = {
+    config: creeperConfig,
+    pixels: creeper
+}
+
+if (templates) {
+    templates.push(paket);
+    console.log("injected");
+} else console.log("couldn't inject");

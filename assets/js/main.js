@@ -1,7 +1,7 @@
 // Containers
 
 const start = document.getElementById("page-home");
-const templates = document.getElementById("page-templates");
+const elem_templates = document.getElementById("page-templates");
 const game = document.getElementById("page-artboard");
 const popUp = document.getElementById("pop-up");
 const pixelBox = document.getElementById("pixelBox");
@@ -19,93 +19,19 @@ const thumbnails = document.getElementsByClassName("thumbnail");
 
 //Game Logic
 
+const templates = [];
+
 let artboardWidth = 0; // Will be set when the artboard is opened
 let selectedColor = "";
-let selectedTemplate = "";
+let selectedTemplateName = "";
+let selectedTemplateConfig = null;
+let selectedTemplatePixels = [];
 let selectedBarFill = null; // Element
 let drawing = false;
 
 // ======================================================================= //
 
-const creeperConfig = {
-    width: 8,
-    height: 8,
-    colors: ["#70C47A", "#C6FFA8", "#000000"]
-};
-
-const creeper = [
-    "#70C47A",
-    "#70C47A",
-    "#C6FFA8",
-    "#C6FFA8",
-    "#70C47A",
-    "#70C47A",
-    "#70C47A",
-    "#C6FFA8",
-
-    "#70C47A",
-    "#70C47A",
-    "#C6FFA8",
-    "#70C47A",
-    "#C6FFA8",
-    "#C6FFA8",
-    "#70C47A",
-    "#70C47A",
-
-    "#C6FFA8",
-    "#000000",
-    "#000000",
-    "#70C47A",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#70C47A",
-
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#C6FFA8",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#70C47A",
-
-    "#C6FFA8",
-    "#70C47A",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#C6FFA8",
-    "#C6FFA8",
-    "#70C47A",
-
-    "#70C47A",
-    "#C6FFA8",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#70C47A",
-    "#C6FFA8",
-
-    "#C6FFA8",
-    "#70C47A",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#000000",
-    "#C6FFA8",
-    "#70C47A",
-
-    "#70C47A",
-    "#C6FFA8",
-    "#000000",
-    "#70C47A",
-    "#70C47A",
-    "#000000",
-    "#C6FFA8",
-    "#70C47A",
-]
+loadTemplates();
 
 // ======================================================================= //
 
@@ -147,19 +73,25 @@ replayBtn.onclick = showClickHistory;
 
 function startGame() {
     start.classList.add("hidden");
-    templates.classList.remove("hidden");
+    elem_templates.classList.remove("hidden");
 }
 
 function openArtboard(i, templateName) {
     // Set globale selected template name
-    selectedTemplate = templateName;
+    selectedTemplateName = templateName;
+    selectedTemplateConfig = templates.find((t) => {
+        return t.config.name == templateName;
+    }).config;
+    selectedTemplatePixels = templates.find((t) => {
+        return t.config.name == templateName;
+    }).pixels;
 
-    templates.classList.add("hidden");
+    elem_templates.classList.add("hidden");
     game.classList.remove("hidden");
     artboardWidth = pixelBox.offsetWidth;
 
 
-    if (localStorage.getItem(selectedTemplate + "_done") == 1) {
+    if (localStorage.getItem(selectedTemplateName + "_done") == 1) {
         renderPixels(true);
         renderPalette(true);
 
@@ -175,18 +107,18 @@ function openArtboard(i, templateName) {
 function renderPixels(bitmisse) {
     // Ekrana pikselleri <div> olarak ekle
     pixelBox.innerHTML = ""; // Temizle
-    for (let i = 0; i < creeper.length; i++) {
+    for (let i = 0; i < selectedTemplatePixels.length; i++) {
         const pixel = document.createElement("div");
-        pixel.style.width = artboardWidth / creeperConfig.width + "px";
-        pixel.style.height = artboardWidth / creeperConfig.width + "px";
+        pixel.style.width = artboardWidth / selectedTemplateConfig.width + "px";
+        pixel.style.height = artboardWidth / selectedTemplateConfig.width + "px";
         if (bitmisse == true) {
-            pixel.style.backgroundColor = creeper[i];
+            pixel.style.backgroundColor = selectedTemplatePixels[i];
         } else {
-            pixel.style.backgroundColor = convertToGray(creeper[i]);
-            pixel.setAttribute("data-original-color", creeper[i]);
+            pixel.style.backgroundColor = convertToGray(selectedTemplatePixels[i]);
+            pixel.setAttribute("data-original-color", selectedTemplatePixels[i]);
         }
-        for (let x = 0; x < creeperConfig.colors.length; x++) { // Renklerden birine eşitse}
-            if (creeper[i] == creeperConfig.colors[x] && !bitmisse) {
+        for (let x = 0; x < selectedTemplateConfig.colors.length; x++) { // Renklerden birine eşitse}
+            if (selectedTemplatePixels[i] == selectedTemplateConfig.colors[x] && !bitmisse) {
                 pixel.textContent = x + 1;
                 break;
             }
@@ -233,11 +165,11 @@ function selectPixel(i, addHistory) {
     }
 
     // Find the selected color index
-    /* for (let x = 0; x < creeperConfig.colors.length; x++) {
+    /* for (let x = 0; x < selectedTemplateConfig.colors.length; x++) {
         const seciliRenginYazisi = x + 1;
         const seciliRenginIndexi = x;
 
-        if (selectedColor == creeperConfig.colors[seciliRenginIndexi]) {
+        if (selectedColor == selectedTemplateConfig.colors[seciliRenginIndexi]) {
             p.classList.add("filled" + seciliRenginIndexi);
 
             const barFill = document.getElementsByClassName("bar-fill")[seciliRenginIndexi];
@@ -265,17 +197,17 @@ function selectPixel(i, addHistory) {
 }
 
 function clickHistory(i) {
-    const eskiDeger = localStorage.getItem(selectedTemplate + "_history");
+    const eskiDeger = localStorage.getItem(selectedTemplateName + "_history");
 
     if (eskiDeger == null) {
-        localStorage.setItem(selectedTemplate + "_history", i)
+        localStorage.setItem(selectedTemplateName + "_history", i)
     } else {
-        localStorage.setItem(selectedTemplate + "_history", eskiDeger + "," + i)
+        localStorage.setItem(selectedTemplateName + "_history", eskiDeger + "," + i)
     }
 }
 
 async function showClickHistory() {
-    const isim = localStorage.getItem(selectedTemplate + "_history")
+    const isim = localStorage.getItem(selectedTemplateName + "_history")
     const array = isim.split(',');
     renderPixels(false)
     for (let x = 0; x < array.length; x++) {
@@ -290,13 +222,13 @@ async function showClickHistory() {
 function renderPalette(bitmisse) {
     // Paleti renklerini renderla
     palletteBox.innerHTML = ""; // Temizle
-    for (let i = 0; i < creeperConfig.colors.length; i++) {
+    for (let i = 0; i < selectedTemplateConfig.colors.length; i++) {
         const colorBox = document.createElement("div");
         colorBox.classList.add("color-box");
 
         const colorNumberBox = document.createElement("div");
         colorNumberBox.classList.add("color-number-box");
-        colorNumberBox.style.backgroundColor = creeperConfig.colors[i];
+        colorNumberBox.style.backgroundColor = selectedTemplateConfig.colors[i];
 
         if (!bitmisse) {
             colorNumberBox.textContent = i + 1;
@@ -306,7 +238,7 @@ function renderPalette(bitmisse) {
             });
         }
 
-        if (tooDark(creeperConfig.colors[i])) {
+        if (tooDark(selectedTemplateConfig.colors[i])) {
             colorNumberBox.style.color = "#ffffff";
         }
 
@@ -334,7 +266,7 @@ function renderPalette(bitmisse) {
 
 function goBack() {
     game.classList.add("hidden");
-    templates.classList.remove("hidden");
+    elem_templates.classList.remove("hidden");
 }
 
 function selectColor(i) {
@@ -370,7 +302,7 @@ function selectColor(i) {
             }
         }
 
-        selectedColor = creeperConfig.colors[i];
+        selectedColor = selectedTemplateConfig.colors[i];
     }
 
     selectedBarFill = finishBars[i].children[0];
@@ -396,7 +328,7 @@ function allFinished() {
         origin: { y: 0.7 }
     };
 
-    localStorage.setItem(selectedTemplate + "_done", 1);
+    localStorage.setItem(selectedTemplateName + "_done", 1);
 
 
     function fire(particleRatio, opts) {
@@ -455,10 +387,20 @@ function playAgain() {
     if (cevap) {
         renderPixels();
         renderPalette();
-        localStorage.removeItem(selectedTemplate + "_done");
-        localStorage.removeItem(selectedTemplate + "_history");
+        localStorage.removeItem(selectedTemplateName + "_done");
+        localStorage.removeItem(selectedTemplateName + "_history");
         replayBtn.classList.add("hidden");
         trashBtn.classList.add("hidden");
+    }
+}
+
+function loadTemplates() {
+    for(const thumb of thumbnails) {
+        if(thumb.getAttribute("data-file")) {
+            const js = document.createElement("script");
+            js.src = thumb.getAttribute("data-file");
+            document.head.appendChild(js);
+        }
     }
 }
 
