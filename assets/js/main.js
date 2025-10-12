@@ -23,6 +23,7 @@ let artboardWidth = 0; // Will be set when the artboard is opened
 let selectedColor = "";
 let selectedTemplate = "";
 let selectedBarFill = null; // Element
+let drawing = false;
 
 // ======================================================================= //
 
@@ -191,11 +192,18 @@ function renderPixels(bitmisse) {
             }
         }
         pixelBox.appendChild(pixel);
-        pixel.addEventListener("click", () => {
+        pixel.addEventListener("mousedown", () => {
             if (pixel.classList.contains("enabled") == true) {
                 selectPixel(i, true);
+                drawing = true;
             }
         });
+        pixel.addEventListener("mouseup", () => {
+            drawing = false;
+        });
+        pixel.addEventListener("mouseenter", () => {
+            if(drawing && pixel.classList.contains("enabled")) selectPixel(i, true);
+        })
     }
 }
 

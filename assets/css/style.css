@@ -135,6 +135,7 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    user-select: none;
 }
 
 .pixel-box>div:nth-child(odd) {
