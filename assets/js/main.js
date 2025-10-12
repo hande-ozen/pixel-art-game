@@ -22,6 +22,7 @@ const thumbnails = document.getElementsByClassName("thumbnail");
 let artboardWidth = 0; // Will be set when the artboard is opened
 let selectedColor = "";
 let selectedTemplate = "";
+let selectedBarFill = null; // Element
 
 // ======================================================================= //
 
@@ -137,6 +138,8 @@ for (let i = 0; i < thumbnails.length; i++) {
 
 trashBtn.onclick = playAgain;
 
+replayBtn.onclick = showClickHistory;
+
 // ======================================================================= //
 
 // Functions
@@ -179,6 +182,7 @@ function renderPixels(bitmisse) {
             pixel.style.backgroundColor = creeper[i];
         } else {
             pixel.style.backgroundColor = convertToGray(creeper[i]);
+            pixel.setAttribute("data-original-color", creeper[i]);
         }
         for (let x = 0; x < creeperConfig.colors.length; x++) { // Renklerden birine eşitse}
             if (creeper[i] == creeperConfig.colors[x] && !bitmisse) {
@@ -188,55 +192,67 @@ function renderPixels(bitmisse) {
         }
         pixelBox.appendChild(pixel);
         pixel.addEventListener("click", () => {
-            selectPixel(i);
+            if (pixel.classList.contains("enabled") == true) {
+                selectPixel(i, true);
+            }
         });
     }
 }
 
 
-function selectPixel(i) {
+function selectPixel(i, addHistory) {
     // Seçilen pikseli renk ile doldur
     const p = pixelBox.children[i];
-    if (p.classList.contains("enabled") == true) {
-        p.style.backgroundColor = selectedColor;
-        p.classList.remove("enabled");
-        p.textContent = "";
+    const gercekRenk = p.getAttribute("data-original-color");
 
-        // TODO: -hafizaya almak
+    p.style.backgroundColor = gercekRenk;
+    p.classList.remove("enabled");
+    p.textContent = "";
+
+    // hafizaya almak
+    if (addHistory == true) {
+        // into localStorage
         clickHistory(i);
-
-
-        // Find the selected color index
-        for (let x = 0; x < creeperConfig.colors.length; x++) {
-            const seciliRenginYazisi = x + 1;
-            const seciliRenginIndexi = x;
-
-            if (selectedColor == creeperConfig.colors[seciliRenginIndexi]) {
-                p.classList.add("filled" + seciliRenginIndexi);
-
-                const barFill = document.getElementsByClassName("bar-fill")[seciliRenginIndexi];
-                const tumSeciliRenktekiPikseller = [];
-                const doluPixeller = [];
-
-                for (let n = 0; n < pixelBox.children.length; n++) {
-                    if (pixelBox.children[n].textContent == seciliRenginYazisi) {
-                        tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
-                    } else if (pixelBox.children[n].classList.contains("filled" + seciliRenginIndexi)) {
-                        tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
-                        doluPixeller.push(pixelBox.children[n]);
-                    }
-                }
-
-                const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
-                barFill.style.width = percentage + "%";
-                if (percentage == 100) {
-                    colorFinished(seciliRenginIndexi, true);
-                }
-                break;
-            }
+        
+        // fillBar
+        const doluPixeller = Array.from(pixelBox.children).filter((pixel) => { return pixel.textContent == "" && pixel.getAttribute("data-original-color") == gercekRenk });
+        const tumSeciliRenktekiPikseller = Array.from(pixelBox.children).filter((pixel) => { return pixel.getAttribute("data-original-color") == gercekRenk });
+        const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
+        selectedBarFill.style.width = percentage + "%";
+        if (percentage == 100) {
+            colorFinished(selectedBarFill.parentElement.previousSibling, true);
         }
     }
 
+    // Find the selected color index
+    /* for (let x = 0; x < creeperConfig.colors.length; x++) {
+        const seciliRenginYazisi = x + 1;
+        const seciliRenginIndexi = x;
+
+        if (selectedColor == creeperConfig.colors[seciliRenginIndexi]) {
+            p.classList.add("filled" + seciliRenginIndexi);
+
+            const barFill = document.getElementsByClassName("bar-fill")[seciliRenginIndexi];
+            const tumSeciliRenktekiPikseller = [];
+            const doluPixeller = [];
+
+            for (let n = 0; n < pixelBox.children.length; n++) {
+                if (pixelBox.children[n].textContent == seciliRenginYazisi) {
+                    tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
+                } else if (pixelBox.children[n].classList.contains("filled" + seciliRenginIndexi)) {
+                    tumSeciliRenktekiPikseller.push(pixelBox.children[n]);
+                    doluPixeller.push(pixelBox.children[n]);
+                }
+            }
+
+            const percentage = (doluPixeller.length / tumSeciliRenktekiPikseller.length) * 100;
+            barFill.style.width = percentage + "%";
+            if (percentage == 100) {
+                colorFinished(seciliRenginIndexi, true);
+            }
+            break;
+        }
+    } */
 
 }
 
@@ -247,6 +263,19 @@ function clickHistory(i) {
         localStorage.setItem(selectedTemplate + "_history", i)
     } else {
         localStorage.setItem(selectedTemplate + "_history", eskiDeger + "," + i)
+    }
+}
+
+async function showClickHistory() {
+    const isim = localStorage.getItem(selectedTemplate + "_history")
+    const array = isim.split(',');
+    renderPixels(false)
+    for (let x = 0; x < array.length; x++) {
+        //const siradakiPixel = pixelBox.children[array[x]];
+        selectPixel(array[x], false);
+        
+        // 25ms sleep
+        await new Promise(res => setTimeout(res, 25));
     }
 }
 
@@ -290,7 +319,7 @@ function renderPalette(bitmisse) {
         palletteBox.appendChild(colorBox);
 
         if (bitmisse) {
-            colorFinished(i, false)
+            colorFinished(colorNumberBox, false)
         }
     }
 }
@@ -335,29 +364,17 @@ function selectColor(i) {
 
         selectedColor = creeperConfig.colors[i];
     }
+
+    selectedBarFill = finishBars[i].children[0];
 }
 
-function colorFinished(i, checkAllFinished) {
-    //const colorNumberBoxes = [...document.getElementsByClassName("color-number-box")];
-    const colorNumberBoxes = Array.from(document.getElementsByClassName("color-number-box")); // find() fonksiyonu icin GERCEK array lazim
-    colorNumberBoxes[i].classList.add("done");
+function colorFinished(colorBox, checkAllFinished) {
+    const colorNumberBoxes = [...document.getElementsByClassName("color-number-box")];
+    colorBox.classList.add("done");
 
-    colorNumberBoxes[i].innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
+    colorBox.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
 
     // Check if all done
-
-    let herhangiBitmeyenVarMi = false;
-    /* for (let n = 0; n < colorNumberBoxes.length; n++) {
-        if(colorNumberBoxes[n].classList.contains("done") == false) {
-            herhangiBitmeyenVarMi = true;
-            break;
-        }
-    }
-
-    if (herhangiBitmeyenVarMi == false) {
-        allFinished();
-    } */
-
     if (checkAllFinished == true && !colorNumberBoxes.find((box) => box.classList.contains("done") == false))
         allFinished();
 }
@@ -430,7 +447,10 @@ function playAgain() {
     if (cevap) {
         renderPixels();
         renderPalette();
-        localStorage.removeItem(selectedTemplate + "_done")
+        localStorage.removeItem(selectedTemplate + "_done");
+        localStorage.removeItem(selectedTemplate + "_history");
+        replayBtn.classList.add("hidden");
+        trashBtn.classList.add("hidden");
     }
 }
 
