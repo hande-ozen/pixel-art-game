@@ -1,4 +1,4 @@
-//PowerPopGirls 11x15
+//PowerPopGirls 11x7
 
 const powerPopGirlsConfig = {
     name: "power-pop-girls",
