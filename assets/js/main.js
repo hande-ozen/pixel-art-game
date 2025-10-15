@@ -61,6 +61,9 @@ for (let i = 0; i < thumbnails.length; i++) {
     if (bitmisMi == 1) {
         const bitmisImg = thumbnails[i].getAttribute("data-finish-img");
         thumbnails[i].setAttribute("src", bitmisImg);
+    } else {
+        const bitmemisImg = thumbnails[i].getAttribute("data-original-img");
+        thumbnails[i].setAttribute("src", bitmemisImg);
     }
 
     // Set click event
@@ -276,6 +279,20 @@ function renderPalette(bitmisse) {
 function goBack() {
     game.classList.add("hidden");
     elem_templates.classList.remove("hidden");
+
+    for (let i = 0; i < thumbnails.length; i++) {
+        // Set finished image
+        const templateName = thumbnails[i].getAttribute("data-template"); // ex. "creeper"
+        const bitmisMi = localStorage.getItem(templateName + "_done"); // ex. 1, or null
+        if (bitmisMi == 1) {
+            const bitmisImg = thumbnails[i].getAttribute("data-finish-img");
+            thumbnails[i].setAttribute("src", bitmisImg);
+        } else {
+            const bitmemisImg = thumbnails[i].getAttribute("data-original-img");
+            thumbnails[i].setAttribute("src", bitmemisImg);
+        }
+
+    }
 }
 
 function selectColor(i) {
